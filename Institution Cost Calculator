@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <input type = "button" id = "reset" onclick = "reset()" value = "reset">
+        <h1>
+            Institution Caclulator
+        </h1>
+        <hr>
+        <strong>
+            Original Dev:
+        </strong>
+        <input type = "text" id = "dev">
+        <input type = "button" id = "devButton" value = "Go!" onclick = "inputDev()"><br><br>
+        <strong>
+            Dev Cost modifier(in percent):
+        </strong>
+        <input type = "text" id = "mod">
+        <input type = "button" id = "modButton" value = "Go!" onclick = "inputMod()"><hr>
+        The total dev will be <span id = "finalDev"></span><br>
+        The total cost will be <span id = "finalCost"></span><br>
+        The most efficient province would be a <span id = "bestProvince"></span> dev province.<br>
+        The cost of that would be <span id = "bestProvinceCost"></span><hr>
+        <canvas id = "canvas1" height = "300" width = "640" ></canvas>
+        <script>
+        	document.getElementById("bestProvince").innerHTML = "_____";
+        	var dev = 0;
+            var mod = 1;
+            var count = 0;
+            var total = 0;
+            var cost = 0;
+            var devMod = 0;
+            var scale = {};
+            var max = 0;
+            var min = {};
+            var c=document.getElementById("canvas1");
+			var ctx=c.getContext("2d");
+            function reset(){
+            	dev = 0;
+                count = 0;
+                total = 0;
+                mod = 1;
+                cost = 0;
+                document.getElementById("finalDev").innerHTML = "";
+                document.getElementById("finalCost").innerHTML = "";
+            }
+            function inputDev(){
+            	dev = document.getElementById("dev").value;
+                document.getElementById("dev").value = "";
+                count++;
+                dev = parseInt(dev);
+                if(count == 2){
+                	calculate(dev);
+                }
+            }
+            function inputMod(){
+            	mod = document.getElementById("mod").value;
+                document.getElementById("mod").value = "";
+                count++;
+                mod = parseInt(mod);
+                mod = mod / 100;
+                if(count == 2){
+                	calculate(dev);
+                }
+            }
+            function calculate(num){
+                min.dev = num;
+            	while(total < 1){
+                	if(num > 9 && num < 20){
+                    	devMod = ((num - 9) / 100) * 3;
+                    } else if (num > 19){
+                    	devMod = (((num - 19) / 100) * 6) + 0.3;
+                    }
+                    alert(mod + ',' + devMod);
+                	cost = cost + (50 * (mod + devMod));
+                	total = total + (Math.round(num / 6) / 100)
+                    num++;
+                    min.cost = cost;
+                }
+                document.getElementById("finalDev").innerHTML = num;
+                document.getElementById("finalCost").innerHTML = cost;
+                visualize(3);
+            }
+            function visualize(num1){
+            	//something very wrong with devmod
+            	scale.wid = 20;
+            	ctx.beginPath();
+            	count = 0;
+                for (var j = 0; j < 2; j++){
+                	if(j == 1){
+                    	ctx.moveTo(0,0);
+                    }
+                	for(var i = 3; i < 5; i++){
+                		num1 = i;
+                    	cost = 0;
+                        total = 0;
+                		while(total < 1){
+                        	if(num1 < 10){
+                            	devmod = 0;
+                			}else if(num1 > 9 && num1 < 20){
+                    			devMod = ((num1 - 9) / 100) * 3;
+                    		} else if (num1 > 19){
+                    			devMod = (((num1 - 19) / 100) * 6) + 0.3;
+                    		}
+                            //alert(devmod);
+                			cost = cost + (50 * (mod + devMod));
+                			total = total + (Math.round(num1 / 6) / 100)
+                    		num1++;
+                		}
+                        if(count == 0){
+                        	if(cost > max){
+                        		max = cost;
+                        	}
+                            if(cost < min.cost){
+                            	min.dev = i;
+                                min.cost = cost;
+                            }
+                        }
+                        if(count == 1){
+                            ctx.lineTo((i - 2) * scale.wid, 300 - (cost * scale.height));
+                        }
+                	}
+                    if(j == 1){
+                        ctx.stroke();
+                    }
+                    scale.height = 300 / max;
+                    count++;
+                }
+                document.getElementById("bestProvince").innerHTML = min.dev;
+                document.getElementById("bestProvinceCost").innerHTML = min.cost;
+            }
+    	</script>
+    </body>
+</html>

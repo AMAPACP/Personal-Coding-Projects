@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <h1>
+      Yahtzee
+    </h1>
+    <strong>Current Dice:</strong><span id = "currentRoll"></span>
+    <br>
+    <br>
+    Save which dice?: 
+    <input type = "button" id = "dieOne" value = "1" onclick = "saveDie(0, a)" style = "display: inline">
+    <input type = "button" id = "dieTwo" value = "2" onclick = "saveDie(1, b)" style = "display: inline">
+    <input type = "button" id = "dieThree" value = "3" onclick = "saveDie(2, c)" style = "display: inline">
+    <input type = "button" id = "dieFour" value = "4" onclick = "saveDie(3, d)" style = "display: inline">
+    <input type = "button" id = "dieFive" value = "5" onclick = "saveDie(4, e)" style = "display: inline">
+    <br>
+    <br>
+    <input type = "button" id = "diceRoll" value = "Roll" onclick = "rollDice()">
+    <hr>
+    <strong>Ones: </strong> <span id = "ones" ></span>    
+    <input type = "button" id = "inputOnes" value = "Input" onclick = "inputNum(1, ones)" style="float: right;">
+    <!--<input type = "button" id = "crossOnes" value = "Cross off" onclick = "crossOff"-->
+    <hr>
+    <strong>Twos: </strong> <span id = "twos" ></span>    
+    <input type = "button" id = "inputTwos" value = "Input" onclick = "inputNum(2, twos)" style="float: right;">
+    <hr>
+    <strong>Threes: </strong> <span id = "threes" ></span>    
+    <input type = "button" id = "inputThrees" value = "Input" onclick = "inputNum(3, threes)" style="float: right;">
+    <hr>
+    <strong>Fours: </strong> <span id = "fours" ></span>    
+    <input type = "button" id = "inputFours" value = "Input" onclick = "inputNum(4, fours)" style="float: right;">
+    <hr>
+    <strong>Fives: </strong> <span id = "fives" ></span>    
+    <input type = "button" id = "inputFives" value = "Input" onclick = "inputNum(5, fives)" style="float: right;">
+    <hr>
+    <strong>Sixes: </strong> <span id = "sixes" ></span>    
+    <input type = "button" id = "inputSixes" value = "Input" onclick = "inputNum(6, sixes)" style="float: right;">
+    <hr>
+    <strong>Bonus?: </strong> <span id = "displayBonus"></span>
+    <input type = "button" value = "Check" onclick = "checkBonus()" style = "float:right;">
+    <hr>
+    <strong>Three of a kind: </strong> <span id = "display3OfAKind"></span>
+    <input type = "button" value = "Input" onclick = "inputXOfAKind(2, aa)" style = "float:right;">
+    <input type = "button" value = "Cross Off" onclick = "crossOff(0, aa)" style = "float:right;">
+    <hr>
+    <strong>Four of a kind: </strong> <span id = "display4OfAKind"></span>
+    <input type = "button" value = "Input" onclick = "inputXOfAKind(3, bb)" style = "float:right;">
+    <input type = "button" value = "Cross Off" onclick = "crossOff(1, bb)" style = "float:right;">
+    <hr>
+    <strong>Full house: </strong> <span id = "displayFullHouse"></span>
+    <input type = "button" value = "Input" onclick = "inputFullHouse()" style = "float:right;">
+    <input type = "button" value = "Cross Off" onclick = "crossOff(2, cc)" style = "float:right;">
+    <hr>
+    <strong>Small Straight: </strong><span id = "displaySmallStraight"></span>
+    <input type = "button" value = "Input" onclick = "inputSmallStraight()" style = "float:right;">
+    <input type = "button" value = "Cross Off" onclick = "crossOff(3, dd)" style = "float:right;">
+    <hr>
+    <strong>Large Straight: </strong><span id = "displayLargeStraight"></span>
+    <input type = "button" value = "Input" onclick = "inputLargeStraight()" style = "float:right;">
+    <input type = "button" value = "Cross Off" onclick = "crossOff(4, ee)" style = "float:right;">
+    <hr>
+    <strong>Yahtzee: </strong><span id = "displayYahtzee"></span>
+    <input type = "button" value = "Input" onclick = "inputYahtzee()" style = "float:right;">
+    <input type = "button" value = "Cross Off" onclick = "crossOff(5, ff)" style = "float:right;">
+    <hr>
+    <strong>Chance: </strong><span id = "displayChance"></span>
+    <input type = "button" value = "Input" onclick = "inputChance()" style = "float:right;">
+    <hr>
+    <strong>Your total: </strong><span id = displayTotal></span>
+    <input type = "button" value = "Add them up!" onclick = "addPoints()" style = "float:right;">
+    <script>
+  		var temp; //need to fix glitch that you can save dice between rolls
+      var toInput = " ", ones = "ones", twos = "twos", threes = "threes", fours = "fours", fives = "fives", sixes = "sixes";
+      var dice = [0,0,0,0,0], savedDice = [0, 0, 0, 0, 0], upperSlots = [0, 0, 0, 0, 0, 0], fullHouseCheck = [0, 0];
+      var smallStraightCheck = [0, 0, 0, 0], lowerSlots = [0, 0, 0, 0, 0, 0, 0];
+      var a = "dieOne", b = "dieTwo", c = "dieThree", d = "dieFour", e = "dieFive", aa = "display3OfAKind", bb = "display4OfAKind";
+      var cc = "displayFullHouse", dd = "displaySmallStraight", ee = "displayLargeStraight", ff = "displayYahtzee";
+      var count = 0, rollCount = 0, placeholder1 = 0, bonus = 0, everything = 0;
+      var placeholder = true, canInput = true;
+      function saveDie(index, button){ //updates which dice are saved, hides the button pressed
+      	if(rollCount !== 0){
+      		savedDice[index] = 1;
+        	document.getElementById(button).style.display = "none";
+        } else {
+        	alert("You may not save dice at this time");
+        }
+      }
+      function showButtons(){ //shows the save dice buttons
+      	document.getElementById(a).style.display = "inline";
+      	document.getElementById(b).style.display = "inline";
+      	document.getElementById(c).style.display = "inline";
+      	document.getElementById(d).style.display = "inline";
+      	document.getElementById(e).style.display = "inline";
+      }
+      function rollDice(){ //rolls, sorts, then inputs dice
+      	if(rollCount < 3){
+        	canInput = true;
+      		toInput = " ";
+        	for(var i = 0; i < 5; i++){//rolls dice
+        		if(savedDice[i] == 0){
+        			dice[i] = rollNum();
+          	}
+        	}
+        	dice.sort();//sorts dice
+        	for(var i = 0; i < 4; i++){//formats dice string
+        		toInput = toInput + dice[i];
+          	toInput = toInput + ", ";
+       	 	}
+       	 	toInput = toInput + dice[4];
+        	document.getElementById("currentRoll").innerHTML = toInput; //inputs dice
+        	savedDice = [0, 0, 0, 0, 0]; //resets saved dice and buttons
+        	showButtons();
+          rollCount++;
+        } else {
+        	alert("Max number of rolls reached, input something");
+          showButtons();
+        }
+      }
+      function rollNum(){ //rolls a single die
+      	temp = Math.random();
+        temp = temp * 5 + 1;
+        temp = Math.round(temp);
+        return temp;
+      }
+      function inputNum(num, place){ //inputs a number up above
+      	if(upperSlots[num - 1] == 0 && canInput){ // checks if slot is empty
+      		count = 0;
+        	for(var i = 0; i < 5; i++){ // counts the instances of a number in the array
+        		if(dice[i] == num){
+          		count++;
+          	}
+        	}
+        	temp = count * num;
+        	document.getElementById(place).innerHTML = temp;
+        	upperSlots[num - 1] = 1; // updates slot
+          hideDice();
+        	rollCount = 0;
+          savedDice = [0, 0, 0, 0, 0]; //resets the saved dice
+          canInput = false;
+        } else {
+        	alert("Slot is already filled");
+        }
+      }
+      function checkBonus(){ //checks whether player has achieved the upper bonus
+      	placeholder = true;
+      	for(var i = 0; i < 6; i++){//checks whether all upper slots are filled
+        	if(upperSlots[i] == 0){
+          	placeholder = false;
+          }
+        } 
+        if(placeholder){
+        	placeholder1 = parseInt(document.getElementById("ones").innerHTML) +                             									   																 parseInt(document.getElementById("twos").innerHTML) +
+          							 parseInt(document.getElementById("threes").innerHTML) +
+          							 parseInt(document.getElementById("fours").innerHTML) +
+          							 parseInt(document.getElementById("fives").innerHTML) +
+          							 parseInt(document.getElementById("sixes").innerHTML);
+          if(placeholder1 > 62){
+          	document.getElementById("displayBonus").innerHTML = "Yes";
+            bonus = 35;
+          } else {
+          	document.getElementById("displayBonus").innerHTML = "No";
+          }
+        } else {
+        	alert("Not all upper slots filled");
+        }
+        placeholder = true;
+      	placeholder1 = 0;
+      }
+      function inputXOfAKind(amount, place){ //inputs 3 of a kind
+      	count = 0;
+        placeholder = false;
+        for (var i = 1; i < 7; i++){ // checks if there is a 3 of a kind
+        	for(var j = 0; j < 5; j++){//iterates through the array to check for numbers
+          	if(dice[j] == i){ //counts instances of a number
+            	count++;
+            }
+          }
+          if(count > amount){ // sees that there are three of number
+          	placeholder = true;
+          }
+          count = 0;
+        }
+        if(placeholder && (lowerSlots[amount - 2] == 0)  && canInput){ //actually inputs the numbers
+        	placeholder1 = addDice();
+          document.getElementById(place).innerHTML = placeholder1;
+          hideDice();
+        	rollCount = 0;
+          lowerSlots[amount - 2] = 1;
+          savedDice = [0, 0, 0, 0, 0];
+          canInput = false;
+        } else {
+        	alert("You do not currently have " + (amount + 1) + " of a kind.");
+        }
+        placeholder1 = 0;
+      }
+      function inputFullHouse(){ //inputs full house
+      	count = 0;
+      	for(var i = 1; i < 7; i++){ //iterates through the array, checking each number
+        	for(var j = 0; j < 5; j++){
+          	if(i == dice[j]){
+            	count++;
+            }
+          }
+          if(count == 2){ //checks to see whether there is a full house
+          	fullHouseCheck[0] = 1;
+          } else if(count == 3){
+          	fullHouseCheck[1] = 1;
+          }
+          count = 0;
+        }
+        if(fullHouseCheck[0] == 1 && fullHouseCheck[1] == 1 && lowerSlots[2] == 0 && canInput){ //actually inputs it
+        	document.getElementById("displayFullHouse").innerHTML = "25";
+          hideDice();
+          rollCount = 0;
+          savedDice = [0, 0, 0, 0, 0];
+          lowerSlots[2] = 1;
+          canInput = false;
+        } else {
+        	alert("You do not currently have a full house");
+        }
+      }
+      function inputSmallStraight(){ // inputs a small straight
+      	placeholder = false;
+        if(dice.includes(1) && dice.includes(2) && dice.includes(3) && dice.includes(4)){ //checks whether there is a small strait
+        	placeholder = true;
+        }
+        if(dice.includes(2) && dice.includes(3) && dice.includes(4) && dice.includes(5)){
+        	placeholder = true;
+        }
+        if(dice.includes(3) && dice.includes(4) && dice.includes(5) && dice.includes(6)){
+        	placeholder = true;
+        }
+        if((placeholder) && (lowerSlots[3] == 0) && canInput){
+        	document.getElementById("displaySmallStraight").innerHTML = "30";
+          rollCount = 0;
+          lowerSlots[3] = 1;
+          hideDice();
+          savedDice = [0, 0, 0, 0, 0];
+          canInput = false;
+        } else {
+        	alert("You do not currently have a small straight");
+        }
+        placeholder = true;
+      }
+      function inputLargeStraight(){
+      	placeholder = false;
+        if(dice.includes(1) && dice.includes(2) && dice.includes(3) && dice.includes(4) && dice.includes(5)){ //checks
+        	placeholder = true;
+        }
+        if(dice.includes(6) && dice.includes(2) && dice.includes(3) && dice.includes(4) && dice.includes(5)){
+        	placeholder = true;
+        }
+        if((placeholder) && (lowerSlots[4] == 0) && canInput){
+        	document.getElementById("displayLargeStraight").innerHTML = "40"; //inputs
+          rollCount = 0;
+          lowerSlots[4] = 1;
+          hideDice();
+          savedDice = [0, 0, 0, 0, 0];
+          canInput = false;
+        } else {
+        	alert("You do not currently have a large straight");
+        }
+        placeholder = true;
+      }
+      function inputYahtzee(){
+      	placeholder = false;
+        count = 0;
+        for(var i = 1; i < 7; i++){ //checks for a yahtzee
+        	for(var j = 0; j < 5; j++){
+          	if(dice[j] == i){
+            	count++;
+            }
+          }
+          if(count == 5){
+          	placeholder = true;
+          }
+          count = 0;
+        }
+        if((placeholder) && (lowerSlots[5] == 0) && canInput){
+        	document.getElementById("displayYahtzee").innerHTML = "50";
+          rollCount = 0;
+          lowerSlots[5] = 1;
+          hideDice();
+          savedDice = [0, 0, 0, 0, 0];
+          canInput = false;
+        } else {
+        	alert("You do not currently have a Yahtzee");
+        }
+        placeholder = true;
+      }
+      function inputChance(){
+      	if(lowerSlots[6] == 0 && canInput){
+      		temp = addDice();
+      		document.getElementById("displayChance").innerHTML = temp;
+        	rollCount = 0;
+          lowerSlots[6] = 1;
+          hideDice();
+          savedDice = [0, 0, 0, 0, 0];
+          canInput = false;
+        }
+      }
+      function crossOff(slot, place){
+      	rollCount = 0;
+        lowerSlots[slot] = 1;
+        document.getElementById(place).innerHTML = "0";
+        hideDice();
+      }
+      function addPoints(){ //last thing I need to do is to make this function
+      	placeholder1 = 0;
+        count = 0;
+        for(var i = 0; i < 7; i++){
+        	if(lowerSlots[i] == 1){
+          	count++;
+          }
+        }
+        if(count == 7){
+        	placeholder1++;
+        }
+        count = 0;
+        for(var i = 0; i < 6; i++){
+        	if(upperSlots[i] == 1){
+          	count++;
+          }
+        }
+        if(count == 6){
+        	placeholder1++;
+        }
+        count = 0;
+        if(placeholder1 == 2){
+      		checkBonus();
+        	everything = parseInt(document.getElementById("ones").innerHTML) +                             									   										parseInt(document.getElementById("twos").innerHTML) +
+        	parseInt(document.getElementById("threes").innerHTML) +
+       	  parseInt(document.getElementById("fours").innerHTML) +
+        	parseInt(document.getElementById("fives").innerHTML) +
+       	  parseInt(document.getElementById("sixes").innerHTML) +
+        	parseInt(document.getElementById("display3OfAKind").innerHTML) +                             									   											parseInt(document.getElementById("display4OfAKind").innerHTML) +
+        	parseInt(document.getElementById("displayFullHouse").innerHTML) +
+        	parseInt(document.getElementById("displaySmallStraight").innerHTML) +
+        	parseInt(document.getElementById("displayLargeStraight").innerHTML) +
+        	parseInt(document.getElementById("displayYahtzee").innerHTML) +
+        	parseInt(document.getElementById("displayChance").innerHTML) + bonus;
+          document.getElementById("displayTotal").innerHTML = everything;
+        } else {
+        	alert("You may not do that at this time")
+        }
+        placeholder1 = 0;
+      }
+      function addDice(){// adds dice
+      	placeholder1 = 0;
+        for(var i = 0; i < 5; i++){
+        	placeholder1 += dice[i];
+        }
+        return placeholder1;
+      }
+      function hideDice(){
+      	document.getElementById("currentRoll").innerHTML = "?, ?, ?, ?, ?";
+      }
+  	</script>
+  </body>
+</html>
